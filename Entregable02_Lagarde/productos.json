@@ -1,0 +1,13 @@
+[
+	{
+		"title": "cartuchera",
+		"description": "cartuchera de un piso",
+		"price": 750,
+		"thumbnail": "no tiene foto",
+		"id": 1,
+		"stock": 5,
+		"code": "cartuSimple"
+
+	}
+	
+]
