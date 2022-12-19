@@ -1,96 +1,86 @@
 const fs = require('fs');
-const path = require('path');
 
-class  ProductManager{
+class ProductManager {
     
     constructor(nombreArchivo){
-
-        this.nombreArchivo =`./${nombreArchivo}.json`;       
+        this.nombreArchivo =`./${nombreArchivo}.json`; 
+        try{
+            this.elements = fs.readFileSync(this.nombreArchivo, 'utf-8')
+            this.elements = JSON.parse(this.elements)
+        }catch(error){
+            this.elements = []
+        }      
     }
 
-    async obtenerJson(){
-        const data = await fs.promises.readFile(this.nombreArchivo,'utf-8');
-        return JSON.parse(data);
-    }
-
-    async actualizarArchivo(productos){
-        fs.promises.writeFile(this.nombreArchivo, JSON.stringify(productos, null, '\t'), 'utf-8');
-    }
-
-    async getProducts() {
-        const data =  await this.obtenerJson();
+    getProducts() {
+        const data =  this.elements
         return data;
     };
-
-    async addProduct(data){
-        if( !data.title || 
-            !data.price ||
-            !data.description ||
-            !data.thumbnail ||
-            !data.stock ||
-            !data.code) throw new Error('Datos invalidos');
-
-        let id = 1;
-        const productos =   await this.obtenerJson();
-       if(productos.length){
-          id = productos[productos.length -1].id +1;
-       }
-        const nuevoProducto = {
-            title: data.title,
-            price: data.price,
-            description: data.description,
-            thumbnail: data.thumbnail,
-            stock: data.stock,
-            code: data.code,
-            id: id
+    
+    getProductById(id){
+        try{
+            const productos = this.elements
+            const busqueda  = productos.filter(dato => dato.id === id);
+            return busqueda;
+        }catch(error){
+            return "No existen elementos"
         }
-        productos.push(nuevoProducto);
-        return await this.actualizarArchivo(productos);
     }
 
-    async getProductById(id, data){
-        const productos = await this.obtenerJson();
-        const busqueda  = productos.find((dato) => dato.id === id);
-        const productModificado = {
-            title: data.title,
-            price: data.price,
-            description: data.description,
-            thumbnail: data.thumbnail,
-            stock: data.stock,
-            code: data.code,
-            id: busqueda.id
+    async save(data){
+        if(this.elements.length === 0){
+            data.id = 1
+        } else{
+            data.id = this.elements[this.elements.length -1].id + 1
         }
-        return busqueda;
+
+        this.elements.push(data)
+
+        try{
+            await fs.promises.writeFile(this.nombreArchivo, JSON.stringify(this.elements, null, '\t'))
+            console.log('Element Saved')
+        }catch(error){
+            console.log('Error')
+        }
+    }
+    
+    delete(){
+        fs.truncateSync(this.nombreArchivo,0,()=> console.log('Content deleted'))
     }
 
-    async updateProduct(id){
-        const productos = await this.obtenerJson();
-        const busqueda  = productos.find((dato) => dato.id === id);
-        console.log(`El producto con id ${id} es:`);
-        console.log(busqueda);
-        return busqueda;
-    }
 
     async deleteById(id){
-        const productos = await this.obtenerJson();
-        productos.splice(id - 1,1);
-        console.log(`Se removio el producto con id:${id} de sus productos`);
-        return await this.actualizarArchivo(productos);
+        try{
+            const producto = this.elements.findIndex((elemento) => elemento.id === id)
+            if(producto !== -1){
+                this.elements.splice(producto, 1)
+                await fs.promises.writeFile(this.nombreArchivo, JSON.stringify(this.elements, null, '\t'))
+            }else{
+                console.log('Element not found')
+            }
+        }catch(error){
+            console.log('Error')
+        }
     }
+    
+    
+    async update(id, data){
+        try{
+            const oldElement = this.elements.find((element) => element.id === id)
+            const index = this.elements.findIndex((elemento) => elemento.id === id)
 
-    async deleteAll(){
-        const productos = await this.obtenerJson();
-        productos.splice(0);
-        console.log('Se borraron todos los productos de su lista');
-        return await this.actualizarArchivo(productos);
+            if(index !== -1){
+                const newElement = {...oldElement, ...data}
+                this.elements[index] = newElement
+                await fs.promises.writeFile(this.nombreArchivo, JSON.stringify(this.elements, null, '\t'))
+            }
+        }catch(error){
+            console.log('error')
+        }
     }
 }
 
+const prueba = new ProductManager('productos');
 
-
-
-
-
-
-
-
+prueba.save({title: 'avengers', year: '2012'})
+prueba.save({title: 'avengers 3', year: '2013'})
