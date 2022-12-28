@@ -1,0 +1,29 @@
+[
+	{
+		"title": "Cartuchera",
+		"description": "Cartuchera simple",
+		"price": 500,
+		"thubnail": "imagenURL",
+		"code": "CartuSimple",
+		"stock": 20,
+		"id": 1
+	},
+	{
+		"title": "Cartuchera",
+		"description": "Cartuchera simple",
+		"price": 500,
+		"thubnail": "imagenURL",
+		"code": "CartuSimple",
+		"stock": 20,
+		"id": 2
+	},
+	{
+		"title": "Cartuchera",
+		"description": "Cartuchera simple",
+		"price": 500,
+		"thubnail": "imagenURL",
+		"code": "CartuSimple",
+		"stock": 20,
+		"id": 3
+	}
+]
