@@ -28,6 +28,10 @@ class ProductManager {
     }
 
     async save(data){
+        if(!data.title && !data.description && !data.price && !data.thubnail && !data.code && !data.stock){
+            throw new Error("Datos invalidos")
+        }
+
         if(this.elements.length === 0){
             data.id = 1
         } else{
@@ -80,7 +84,9 @@ class ProductManager {
     }
 }
 
-const prueba = new ProductManager('productos');
+ const products = new ProductManager('products')
 
-prueba.save({title: 'avengers', year: '2012'})
-prueba.save({title: 'avengers 3', year: '2013'})
+
+module.exports ={
+    ProductController : products
+}
